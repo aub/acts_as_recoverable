@@ -1,12 +1,26 @@
 = acts_as_recoverable
 
 Acts as recoverable is a plugin for active record that provides a great way to restore objects
-that have been deleted.
+that have been deleted. When a recoverable model is deleted, its data will be stored in an
+auxiliary table. Items from that table 
+
+PROBLEMS, QUESTIONS, TODOS:
+
+1) No generator for the recovery table
+2) No API for recovering objects.
 
 = Setup
 
 The plugin requires a table where it can store the data for the deleted models. I need to make
-a generator for setting up that table, and clearly this will suck until I do so.
+a generator for setting up that table, and clearly this will suck until I do so. The table could be
+created easily enough with:
+
+  create_table :recoverable_objects, :force => true do |t|
+    t.text :object_attributes
+    t.string :object_type
+    t.integer :parent_id
+    t.timestamps
+  end
 
 = Usage
 

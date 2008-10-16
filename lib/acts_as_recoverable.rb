@@ -8,7 +8,6 @@ module Patch
         return if self.included_modules.include?(InstanceMethods)
         
         include InstanceMethods
-        extend ClassMethods
       end
       
       module InstanceMethods
@@ -17,12 +16,12 @@ module Patch
             alias_method_chain :destroy, :recoverable
           end
         end
-        
+
         def destroy_with_recoverable
           create_recoverable_objects_for(self, nil)
           destroy_without_recoverable
         end
-        
+
         def create_recoverable_objects_for(object, parent)
           parent_recoverable = RecoverableObject.create(:object => object, :parent => parent)
 
@@ -34,10 +33,6 @@ module Patch
             end
           end
         end
-      end
-      
-      module ClassMethods
-        
       end
     end
   end
