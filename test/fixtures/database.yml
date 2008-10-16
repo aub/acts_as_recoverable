@@ -1,0 +1,21 @@
+sqlite3:
+  :adapter: sqlite3
+  :dbfile: acts_as_recoverable_plugin.sqlite3.db
+
+sqlite:
+  :adapter: sqlite
+  :dbfile: acts_as_recoverable_plugin.sqlite.db
+    
+postgresql:
+  :adapter: postgresql
+  :username: postgres
+  :password: postgres
+  :database: acts_as_recoverable_plugin_test
+  :min_messages: ERROR
+  
+mysql:
+  :adapter: mysql
+  :host: localhost
+  :username: rails
+  :password:
+  :database: acts_as_recoverable_plugin_test

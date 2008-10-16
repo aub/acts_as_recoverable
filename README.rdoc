@@ -1,0 +1,5 @@
+= acts_as_recoverable
+
+Acts as recoverable is a plugin for active record that provides a great way to restore objects
+that have been deleted.
+
