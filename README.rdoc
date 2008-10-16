@@ -3,3 +3,61 @@
 Acts as recoverable is a plugin for active record that provides a great way to restore objects
 that have been deleted.
 
+= Setup
+
+The plugin requires a table where it can store the data for the deleted models. I need to make
+a generator for setting up that table, and clearly this will suck until I do so.
+
+= Usage
+
+=== Making a model recoverable
+
+  class Article < ActiveRecord::Base
+    acts_as_recoverable
+  end
+
+That was easy. 
+
+=== Destroying models so that they will be restorable
+
+  @article.destroy
+  
+Looks familiar.
+
+=== Recovering destroyed models
+
+This I need to work on. At present, you would have to search for things in the RecoverableObjects
+table, and there is no great way to do so. Once you have that object, though:
+
+  recoverable_object.recover
+  
+=== Dealing with associations
+
+Associations? No problem. When a recoverable object is destroyed, any objects in its associations
+that are marked with :dependent => :destroy will be saved and recovered along with it. This works
+recursively, and any models in the associations that are themselves recoverable will get their own
+entries. Confused? Have an example...
+
+  class Article < ActiveRecord::Base
+    acts_as_recoverable  
+    has_many :comments, :dependent => :destroy
+  end
+
+  class Comment < ActiveRecord::Base
+    belongs_to :article
+  end
+
+  a = Article.create(:comments => { Comment.create, Comment.create })
+  a.destroy
+  
+  # This line intentionally left blank
+  
+  a = recoverable_object.recover
+  a.comments.size  # => 2
+
+In this example, if the comments were themselves recoverable, we would be able to find them in the
+line intentionally left blank as well.
+
+= License
+
+Copyright (c) 2008 Aubrey Holland, patch, released under the MIT license
