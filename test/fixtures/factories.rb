@@ -22,3 +22,18 @@ def author(options={})
   Author.create({
     :name => 'Jack Handey' }.merge(options))    
 end
+
+def listing(num_locations, options={})
+  result = Listing.create({ 
+    :name => 'test_listing'}.merge(options))
+  num_locations.times do |idx|
+    result.locations << location(:address => "#{idx}")
+  end
+  result.save
+  result
+end
+
+def location(options={})
+  Location.create({
+    :address => '1 Main St., Orange Park, FL' }.merge(options))    
+end

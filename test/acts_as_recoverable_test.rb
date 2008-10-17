@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), 'test_helper')
 class ActsAsRecoverableTest < Test::Unit::TestCase
   
   def teardown
-    [Article, Comment, Publication, RecoverableObject, Rating, Comment].each do |klass| 
+    [Article, Comment, Publication, RecoverableObject, Rating, Comment, Listing, Location].each do |klass| 
       klass.all.each { |a| a.destroy }
     end
   end
@@ -33,24 +33,4 @@ class ActsAsRecoverableTest < Test::Unit::TestCase
     a.destroy!
     assert_equal 0, RecoverableObject.count
   end
-  
-  def test_should_add_recoverable_objects_for_dependent_children
-    a = article(4)
-    a.destroy
-    assert_equal 5, RecoverableObject.all.size
-  end
-  
-  def test_should_recursively_add_recoverable_objects
-    a = article(1)
-    a.comments.first.ratings = [rating, rating]
-    a.destroy
-    assert_equal 4, RecoverableObject.all.size
-  end
-  
-  def test_should_not_create_recoverable_objects_for_non_dependent_destroy_associations
-    a = article(2)
-    a.authors = [author, author]
-    a.destroy
-    assert_equal 3, RecoverableObject.all.size
-  end  
 end

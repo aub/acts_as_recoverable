@@ -21,3 +21,13 @@ end
 class Rating < ActiveRecord::Base
   belongs_to :comment
 end
+
+class Listing < ActiveRecord::Base
+  acts_as_recoverable
+  
+  has_and_belongs_to_many :locations
+end
+
+class Location < ActiveRecord::Base
+  has_and_belongs_to_many :listings
+end

@@ -27,11 +27,24 @@ ActiveRecord::Schema.define(:version => 1) do
     t.references :comment
     t.timestamps
   end
+
+  create_table :listings, :force => true do |t|
+    t.string :name
+    t.timestamps
+  end
+
+  create_table :locations, :force => true do |t|
+    t.string :address
+    t.timestamps
+  end
+
+  create_table :listings_locations, :force => true do |t|
+    t.references :listing, :location
+    t.timestamps
+  end
   
   create_table :recoverable_objects, :force => true do |t|
-    t.text :object_attributes
-    t.string :object_type
-    t.integer :parent_id
+    t.text :object_hash
     t.timestamps
   end
 end
