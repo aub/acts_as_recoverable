@@ -27,6 +27,12 @@ class ActsAsRecoverableTest < Test::Unit::TestCase
     a.destroy
     assert_equal 1, RecoverableObject.all.size
   end
+
+  def test_should_not_be_added_to_recoverable_objects_when_destroyed!
+    a = article(0, :name => 'gone for good')
+    a.destroy!
+    assert_equal 0, RecoverableObject.count
+  end
   
   def test_should_add_recoverable_objects_for_dependent_children
     a = article(4)

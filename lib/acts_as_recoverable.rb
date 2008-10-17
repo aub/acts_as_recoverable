@@ -13,16 +13,11 @@ module Patch
       module InstanceMethods
         def self.included(base)
           base.class_eval do
-            alias_method_chain :destroy, :recoverable
+            before_destroy :create_recoverable_objects_for
           end
         end
 
-        def destroy_with_recoverable
-          create_recoverable_objects_for(self, nil)
-          destroy_without_recoverable
-        end
-
-        def create_recoverable_objects_for(object, parent)
+        def create_recoverable_objects_for(object = self, parent = nil)
           parent_recoverable = RecoverableObject.create(:object => object, :parent => parent)
 
           object.class.reflections.each do |name, reflection|
@@ -32,6 +27,11 @@ module Patch
               end
             end
           end
+        end
+
+        def destroy!
+          def self.create_recoverable_objects_for; end # is there a cleaner way to do this?
+          destroy
         end
       end
     end
