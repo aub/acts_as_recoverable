@@ -14,14 +14,20 @@ original deleted object.
 
 PROBLEMS, QUESTIONS, TODOS:
 
-1) No generator for the recovery table
-2) No API for recovering objects.
+1) No API for recovering objects.
 
 = Setup
+  
+Install the plugin:
 
-The plugin requires a table where it can store the data for the deleted models. I need to make
-a generator for setting up that table, and clearly this will suck until I do so. The table could be
-created easily enough with:
+  ./script/plugin install git@github.com:aub/acts_as_recoverable.git
+
+The plugin requires a table where it can store the data for deleted models. The table can be created easily enough:
+
+  ./script/generate recoverable_objects_migration
+  rake db:migrate
+
+All set. The schema for the generated table is:
 
   create_table :recoverable_objects, :force => true do |t|
     t.text :object_hash
@@ -60,8 +66,8 @@ table, and there is no great way to do so. Once you have that object, though:
 
 Associations? No problem. When a recoverable object is destroyed, any objects in its associations
 that are marked with :dependent => :destroy will be saved and recovered along with it. This works
-recursively, and any models in the associations that are themselves recoverable will get their own
-entries. Confused? Have an example...
+recursively, and objects in the associations are not required to be marked as recoverable in order
+to be saved.
 
   class Article < ActiveRecord::Base
     acts_as_recoverable  
@@ -80,10 +86,28 @@ entries. Confused? Have an example...
   a = recoverable_object.recover
   a.comments.size  # => 2
 
-In this example, if the comments were themselves recoverable, we would be able to find them in the
-line intentionally left blank as well. Note that the Comment model does not itself have to be
-recoverable in order for this to work.
+Note that the Comment model does not itself have to be recoverable in order for this to work.
+With has_and_belongs_to_many, the ids of the associated objects are stored even if the association
+does not have :dependent => :destroy. Example:
 
+  class Listing < ActiveRecord::Base
+    has_and_belongs_to_many :locations
+  end
+  
+  class Location < ActiveRecord::Base
+    has_and_belongs_to_many :listings
+  end
+  
+  l = Listing.create(:locations => { Location.create, Location.create })
+  l.destroy
+  
+  # Again intentionally left blank
+  
+  l = recoverable_object.recover
+  l.locations.size  # => 2
+  
+Spiffy!
+  
 = License
 
 Copyright (c) 2008 Aubrey Holland, patch, released under the MIT license
