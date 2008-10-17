@@ -48,7 +48,7 @@ That was easy.
 
   @article.destroy
   
-Looks familiar. Calling destroy! on the object will do a normal destroy and skip the recoverable process.
+Hey, that looks familiar. Calling destroy! on the object will do a normal destroy and skip the recoverable process.
 
 === Recovering destroyed models
 
@@ -64,8 +64,8 @@ table, and there is no great way to do so. Once you have that object, though:
   
 === Dealing with associations
 
-Associations? No problem. When a recoverable object is destroyed, any objects in its associations
-that are marked with :dependent => :destroy will be saved and recovered along with it. This works
+Associations? No problem. When a recoverable object is destroyed, data in :dependent => :destroy and 
+has_and_belongs_to_many associations will be saved and recovered along with it. This works
 recursively, and objects in the associations are not required to be marked as recoverable in order
 to be saved.
 
