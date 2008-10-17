@@ -1,8 +1,16 @@
 = acts_as_recoverable
 
+Paranoia got you down?
+
 Acts as recoverable is a plugin for active record that provides a great way to restore objects
-that have been deleted. When a recoverable model is deleted, its data will be stored in an
-auxiliary table. Items from that table 
+that have been deleted. It's similar in function to acts_as_paranoid, but puts a much smaller strain
+on the the developer (i.e. you) - especially with associations - and works correctly in a number of cases
+where acts_as_paranoid either doesn't work or requires a whole lot of hacking. The plugin is designed
+to work in cases where you want to rescue the user from accidental deletion or allow them to recover
+deleted data in the future. And in order to make it work, you need exactly one line of code. The plugin
+works by serializing the deleted objects' attributes, including associated objects, into a table.
+Objects stored in that table can be queried and recovered through a call that returns a copy of the
+original deleted object.
 
 PROBLEMS, QUESTIONS, TODOS:
 
@@ -16,9 +24,7 @@ a generator for setting up that table, and clearly this will suck until I do so.
 created easily enough with:
 
   create_table :recoverable_objects, :force => true do |t|
-    t.text :object_attributes
-    t.string :object_type
-    t.integer :parent_id
+    t.text :object_hash
     t.timestamps
   end
 
@@ -36,14 +42,19 @@ That was easy.
 
   @article.destroy
   
-Looks familiar.
+Looks familiar. Calling destroy! on the object will do a normal destroy and skip the recoverable process.
 
 === Recovering destroyed models
 
 This I need to work on. At present, you would have to search for things in the RecoverableObjects
 table, and there is no great way to do so. Once you have that object, though:
 
-  recoverable_object.recover
+  # will return an unsaved copy of the original object
+  recoverable_object.recover   
+  
+  # will return a saved copy of the original object and remove it from the
+  # recoverable_objects table.
+  recoverable_object.recover!
   
 === Dealing with associations
 
@@ -70,7 +81,8 @@ entries. Confused? Have an example...
   a.comments.size  # => 2
 
 In this example, if the comments were themselves recoverable, we would be able to find them in the
-line intentionally left blank as well.
+line intentionally left blank as well. Note that the Comment model does not itself have to be
+recoverable in order for this to work.
 
 = License
 
