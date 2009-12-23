@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.timestamps
   end
 
-  create_table :listings_locations, :force => true do |t|
+  create_table :listings_locations, :force => true, :id => false do |t|
     t.references :listing, :location
     t.timestamps
   end
