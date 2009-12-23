@@ -37,8 +37,13 @@ class RecoverableObject < ActiveRecord::Base
   end
   
   def get_object_hash(object)
-    hash = { :type => object.class.name, :attributes => object.attributes, :reflections => {} }
-    
+    column_names = object.class.columns_hash.keys
+    hash = {
+      :type => object.class.name,
+      :attributes => object.attributes.slice(*column_names),
+      :reflections => {},
+    }
+
     object.class.reflections.each do |name, reflection|
       if reflection.options[:dependent] == :destroy
         reflections_hash = hash[:reflections][name] = []

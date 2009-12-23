@@ -30,6 +30,14 @@ class RecoverableObjectTest < Test::Unit::TestCase
     assert_equal 4, RecoverableObject.first.object_hash[:reflections][:comments].size
   end
   
+  def test_should_not_add_attributes_that_are_not_columns
+    a = article(0, :name => 'woot')
+    a['not_a_column'] = 'not a column'
+    r = RecoverableObject.new(:object => a)
+    assert_not_nil r.object_hash[:attributes]['name']
+    assert_nil r.object_hash[:attributes]['not_a_column']
+  end
+
   def test_should_recursively_add_recoverable_objects
     a = article(1)
     a.comments.first.ratings = [rating, rating]
